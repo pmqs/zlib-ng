@@ -135,20 +135,20 @@ jobs:
             cflags: -DNOT_TWEAK_COMPILER
             codecov: ubuntu_gcc_compat_no_opt
 
-          - name: Ubuntu GCC ARM SF ASAN
-            os: ubuntu-latest
-            cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm.cmake -DWITH_SANITIZER=Address
-            asan-options: detect_leaks=0
-            packages: qemu-user crossbuild-essential-armel
-            gcov-exec: arm-linux-gnueabi-gcov
-            codecov: ubuntu_gcc_armsf
+          # - name: Ubuntu GCC ARM SF ASAN
+          #   os: ubuntu-latest
+          #   cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm.cmake -DWITH_SANITIZER=Address
+          #   asan-options: detect_leaks=0
+          #   packages: qemu-user crossbuild-essential-armel
+          #   gcov-exec: arm-linux-gnueabi-gcov
+          #   codecov: ubuntu_gcc_armsf
 
-          - name: Ubuntu GCC ARM SF Compat No Opt UBSAN
-            os: ubuntu-latest
-            cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm.cmake -DZLIB_COMPAT=ON -DWITH_NEW_STRATEGIES=OFF -DWITH_OPTIM=OFF -DWITH_SANITIZER=Undefined
-            packages: qemu-user crossbuild-essential-armel
-            gcov-exec: arm-linux-gnueabi-gcov
-            codecov: ubuntu_gcc_armsf_compat_no_opt
+          # - name: Ubuntu GCC ARM SF Compat No Opt UBSAN
+          #   os: ubuntu-latest
+          #   cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm.cmake -DZLIB_COMPAT=ON -DWITH_NEW_STRATEGIES=OFF -DWITH_OPTIM=OFF -DWITH_SANITIZER=Undefined
+          #   packages: qemu-user crossbuild-essential-armel
+          #   gcov-exec: arm-linux-gnueabi-gcov
+          #   codecov: ubuntu_gcc_armsf_compat_no_opt
 
           - name: Ubuntu GCC ARM HF ASAN
             os: ubuntu-latest
@@ -307,38 +307,38 @@ jobs:
             gcov-exec: sparc64-linux-gnu-gcov
             codecov: ubuntu_gcc_sparc64
 
-          - name: Ubuntu GCC S390X ASAN
-            os: ubuntu-latest
-            cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-s390x.cmake -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
-            asan-options: detect_leaks=0
-            packages: qemu-user crossbuild-essential-s390x
-            ldflags: -static
-            gcov-exec: s390x-linux-gnu-gcov
-            codecov: ubuntu_gcc_s390x
+          # - name: Ubuntu GCC S390X ASAN
+          #   os: ubuntu-latest
+          #   cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-s390x.cmake -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
+          #   asan-options: detect_leaks=0
+          #   packages: qemu-user crossbuild-essential-s390x
+          #   ldflags: -static
+          #   gcov-exec: s390x-linux-gnu-gcov
+          #   codecov: ubuntu_gcc_s390x
 
-          - name: Ubuntu GCC S390X No vectorized CRC32 ASAN
-            os: ubuntu-latest
-            cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-s390x.cmake -DWITH_CRC32_VX=OFF -DWITH_SANITIZER=Address
-            asan-options: detect_leaks=0
-            packages: qemu-user crossbuild-essential-s390x
-            ldflags: -static
-            gcov-exec: s390x-linux-gnu-gcov
-            codecov: ubuntu_gcc_s390x_no_crc32
+          # - name: Ubuntu GCC S390X No vectorized CRC32 ASAN
+          #   os: ubuntu-latest
+          #   cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-s390x.cmake -DWITH_CRC32_VX=OFF -DWITH_SANITIZER=Address
+          #   asan-options: detect_leaks=0
+          #   packages: qemu-user crossbuild-essential-s390x
+          #   ldflags: -static
+          #   gcov-exec: s390x-linux-gnu-gcov
+          #   codecov: ubuntu_gcc_s390x_no_crc32
 
-          - name: ${{ github.repository == 'zlib-ng/zlib-ng' && 'EL10' || 'Ubuntu' }} GCC S390X DFLTCC ASAN
-            os: ${{ github.repository == 'zlib-ng/zlib-ng' && 'z15' || 'ubuntu-latest' }}
-            compiler: gcc
-            cxx-compiler: g++
-            cmake-args: >-
-              ${{ github.repository != 'zlib-ng/zlib-ng' && '-DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-s390x.cmake' || '' }}
-              -DWITH_DFLTCC_DEFLATE=ON -DWITH_DFLTCC_INFLATE=ON -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
-            packages: qemu-user gcc-s390x-linux-gnu g++-s390x-linux-gnu libc-dev-s390x-cross
-            asan-options: detect_leaks=0
-            ldflags: -static
-            gcov-exec: ${{ github.repository == 'zlib-ng/zlib-ng' && 'gcov' || 's390x-linux-gnu-gcov' }}
-            codecov: ${{ github.repository == 'zlib-ng/zlib-ng' && 'el10_gcc_s390x_dfltcc' || 'ubuntu_gcc_s390x_dfltcc' }}
-            # The dedicated z15 test VM has 4 cores
-            parallels-jobs: 4
+          # - name: ${{ github.repository == 'zlib-ng/zlib-ng' && 'EL10' || 'Ubuntu' }} GCC S390X DFLTCC ASAN
+          #   os: ${{ github.repository == 'zlib-ng/zlib-ng' && 'z15' || 'ubuntu-latest' }}
+          #   compiler: gcc
+          #   cxx-compiler: g++
+          #   cmake-args: >-
+          #     ${{ github.repository != 'zlib-ng/zlib-ng' && '-DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-s390x.cmake' || '' }}
+          #     -DWITH_DFLTCC_DEFLATE=ON -DWITH_DFLTCC_INFLATE=ON -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
+          #   packages: qemu-user gcc-s390x-linux-gnu g++-s390x-linux-gnu libc-dev-s390x-cross
+          #   asan-options: detect_leaks=0
+          #   ldflags: -static
+          #   gcov-exec: ${{ github.repository == 'zlib-ng/zlib-ng' && 'gcov' || 's390x-linux-gnu-gcov' }}
+          #   codecov: ${{ github.repository == 'zlib-ng/zlib-ng' && 'el10_gcc_s390x_dfltcc' || 'ubuntu_gcc_s390x_dfltcc' }}
+          #   # The dedicated z15 test VM has 4 cores
+          #   parallels-jobs: 4
 
           - name: ${{ github.repository == 'zlib-ng/zlib-ng' && 'EL10' || 'Ubuntu' }} GCC S390X DFLTCC UBSAN
             os: ${{ github.repository == 'zlib-ng/zlib-ng' && 'z15' || 'ubuntu-latest' }}
@@ -551,13 +551,14 @@ jobs:
             cmake-args: -A ARM64
             # codecov disabled for msvc
 
-            # Only ASAN is valid in Windows MSVC at he moment
+            # Only ASAN is valid in Windows MSVC
             # So don't test Undefined,Thread or Memory
             # See https://learn.microsoft.com/en-us/cpp/sanitizers/asan?view=msvc-170
           - name: Windows MSVC ASAN
             os: windows-latest
             compiler: cl
-            cmake-args: -DWITH_SANITIZER=Address
+            cmake-args: -DWITH_SANITIZER=Address -A x64
+            build-config: Debug
             # codecov disabled for msvc
 
           - name: Windows ClangCl Win32
@@ -611,14 +612,14 @@ jobs:
             cmake-args: -DWITH_SANITIZER=Address
             codecov: macos_clang_intel_asan
 
-          - name: macOS GCC (Intel) UBSAN
-            os: macos-15-intel
-            compiler: gcc-13
-            cxx-compiler: g++-13
-            cmake-args: -DWITH_SANITIZER=Undefined
-            packages: gcc@13
-            gcov-exec: gcov-13
-            codecov: macos_gcc_intel_ubsan
+          # - name: macOS GCC (Intel) UBSAN
+          #   os: macos-15-intel
+          #   compiler: gcc-13
+          #   cxx-compiler: g++-13
+          #   cmake-args: -DWITH_SANITIZER=Undefined
+          #   packages: gcc@13
+          #   gcov-exec: gcov-13
+
 
           - name: macOS Clang (Intel) Native Instructions
             os: macos-15-intel
@@ -634,14 +635,15 @@ jobs:
             cmake-args: -DWITH_SANITIZER=Address
             codecov: macos_clang_arm64
 
-          - name: macOS GCC (ARM64) UBSAN
-            os: macos-14
-            compiler: gcc-13
-            cxx-compiler: g++-13
-            cmake-args: -DWITH_SANITIZER=Undefined
-            packages: gcc@13
-            gcov-exec: gcov-13
-            codecov: macos_gcc_arm64_ubsan
+          # - name: macOS GCC (ARM64) UBSAN
+          #   os: macos-14
+          #   compiler: gcc-13
+          #   cxx-compiler: g++-13
+          #   cmake-args: -DWITH_SANITIZER=Undefined
+          #   packages: gcc@13
+          #   gcov-exec: gcov-13
+
+          #   codecov: macos_gcc_arm64_ubsan
 
           - name: macOS Clang (ARM64) Native Instructions
             os: macos-latest

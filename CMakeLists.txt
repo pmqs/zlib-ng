@@ -111,7 +111,7 @@ Useful when embedding into a larger library.
 Default is no prefix (empty prefix).")
 
 # Add multi-choice option
-set(WITH_SANITIZER OFF CACHE STRING "Enable Sanitizer support")
+set(WITH_SANITIZER OFF CACHE STRING "Enable sanitizer support")
 set(WITH_SANITIZER_FLAVORS "OFF" "memory" "address" "undefined" "thread")
 set_property(CACHE WITH_SANITIZER PROPERTY STRINGS "${WITH_SANITIZER_FLAVORS}")
 
@@ -583,7 +583,7 @@ elseif(WITH_SANITIZER_LOWER IN_LIST WITH_SANITIZER_FLAVORS)
     endif()
     if(NOT RETURN_STATUS)
         set(WITH_SANITIZER_ENABLED OFF)
-        message(FATAL_ERROR "Cannot enable Sanitizer")
+        message(FATAL_ERROR "Cannot enable sanitizer: '${WITH_SANITIZER}'")
     endif()
     set(WITH_SANITIZER_ENABLED ON)
 else()
@@ -1570,7 +1570,7 @@ add_feature_info(WITH_GZFILEOP WITH_GZFILEOP "Compile with support for gzFile re
 add_feature_info(ZLIB_COMPAT ZLIB_COMPAT "Compile with zlib compatible API")
 add_feature_info(ZLIB_ALIASES ZLIB_ALIASES "Compile with zlib compatible CMake targets")
 add_feature_info(BUILD_TESTING BUILD_TESTING "Build test binaries")
-add_feature_info(WITH_SANITIZER WITH_SANITIZER "Enable sanitizer testing support")
+add_feature_info(WITH_SANITIZER WITH_SANITIZER_ENABLED "Enable sanitizer testing support")
 add_feature_info(WITH_GTEST WITH_GTEST "Build tests using Gtest framework")
 add_feature_info(WITH_FUZZERS WITH_FUZZERS "Build test/fuzz")
 add_feature_info(WITH_BENCHMARKS WITH_BENCHMARKS "Build benchmarks using Google Benchmark framework")
@@ -1586,7 +1586,6 @@ add_feature_info(WITH_MAINTAINER_WARNINGS WITH_MAINTAINER_WARNINGS "Build with p
 add_feature_info(WITH_CODE_COVERAGE WITH_CODE_COVERAGE "Enable code coverage reporting")
 add_feature_info(WITH_INFLATE_STRICT WITH_INFLATE_STRICT "Build with strict inflate distance checking")
 add_feature_info(WITH_INFLATE_ALLOW_INVALID_DIST WITH_INFLATE_ALLOW_INVALID_DIST "Build with zero fill for inflate invalid distances")
-add_feature_info(WITH_SANITIZER WITH_SANITIZER_ENABLED "Build with Sanitizer support")
 
 if(BASEARCH_ARM_FOUND)
     add_feature_info(WITH_ARMV6 WITH_ARMV6 "Build with ARMv6 SIMD")
