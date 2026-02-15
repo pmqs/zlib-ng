@@ -551,6 +551,15 @@ jobs:
             cmake-args: -A ARM64
             # codecov disabled for msvc
 
+            # Only ASAN is valid in Windows MSVC at he moment
+            # So don't test Undefined,Thread or Memory
+            # See https://learn.microsoft.com/en-us/cpp/sanitizers/asan?view=msvc-170
+          - name: Windows MSVC ASAN
+            os: windows-latest
+            compiler: cl
+            cmake-args: -DWITH_SANITIZER=Address
+            # codecov disabled for msvc
+
           - name: Windows ClangCl Win32
             os: windows-latest
             cmake-args: -T ClangCl -A Win32

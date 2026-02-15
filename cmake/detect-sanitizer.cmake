@@ -45,44 +45,52 @@ macro(check_sanitizer_support known_checks supported_checks)
     set(${supported_checks} ${available_checks})
 endmacro()
 
-macro(add_address_sanitizer)
+macro(add_address_sanitizer return_status)
     set(known_checks
         address
         pointer-compare
         pointer-subtract
         )
 
+    set(${return_status} 1)
     check_sanitizer_support("${known_checks}" supported_checks)
     if(NOT ${supported_checks} STREQUAL "")
-        message(STATUS "Address sanitizer is enabled: ${supported_checks}")
-        add_compile_options(-fsanitize=${supported_checks})
-        add_link_options(-fsanitize=${supported_checks})
+        message(STATUS "Address Sanitizer is enabled: ${supported_checks}")
+        add_compile_options("-fsanitize=${supported_checks}")
+        # MSVC doesn't have the -fsanitizer linker flags, so only allow for gcc & clang
+        if(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+            add_link_options("-fsanitize=${supported_checks}")
+        endif()
         add_common_sanitizer_flags()
     else()
-        message(STATUS "Address sanitizer is not supported")
+        message(STATUS "Address Sanitizer is not supported")
+        set(${return_status} 0)
     endif()
 
     if(CMAKE_CROSSCOMPILING_EMULATOR)
         # Only check for leak sanitizer if not cross-compiling due to qemu crash
-        message(WARNING "Leak sanitizer is not supported when cross compiling")
+        message(WARNING "Leak Sanitizer is not supported when cross compiling")
     else()
         # Leak sanitizer requires address sanitizer
         check_sanitizer_support("leak" supported_checks)
         if(NOT ${supported_checks} STREQUAL "")
-            message(STATUS "Leak sanitizer is enabled: ${supported_checks}")
+            message(STATUS "Leak Sanitizer is enabled: ${supported_checks}")
             add_compile_options(-fsanitize=${supported_checks})
             add_link_options(-fsanitize=${supported_checks})
             add_common_sanitizer_flags()
         else()
-            message(STATUS "Leak sanitizer is not supported")
+            # The Microsoft C compiler doesn't support Leak detector,
+            # so don't make this an error that disables ASAN completely
+            message(STATUS "Leak Sanitizer is not supported")
         endif()
     endif()
 endmacro()
 
-macro(add_memory_sanitizer)
+macro(add_memory_sanitizer return_status)
+    set(${return_status} 1)
     check_sanitizer_support("memory" supported_checks)
     if(NOT ${supported_checks} STREQUAL "")
-        message(STATUS "Memory sanitizer is enabled: ${supported_checks}")
+        message(STATUS "Memory Sanitizer is enabled: ${supported_checks}")
         add_compile_options(-fsanitize=${supported_checks})
         add_link_options(-fsanitize=${supported_checks})
         add_common_sanitizer_flags()
@@ -93,23 +101,26 @@ macro(add_memory_sanitizer)
             add_link_options(-fsanitize-memory-track-origins)
         endif()
     else()
-        message(STATUS "Memory sanitizer is not supported")
+        message(STATUS "Memory Sanitizer is not supported")
+        set(${return_status} 0)
     endif()
 endmacro()
 
-macro(add_thread_sanitizer)
+macro(add_thread_sanitizer return_status)
+    set(${return_status} 1)
     check_sanitizer_support("thread" supported_checks)
     if(NOT ${supported_checks} STREQUAL "")
-        message(STATUS "Thread sanitizer is enabled: ${supported_checks}")
+        message(STATUS "Thread Sanitizer is enabled: ${supported_checks}")
         add_compile_options(-fsanitize=${supported_checks})
         add_link_options(-fsanitize=${supported_checks})
         add_common_sanitizer_flags()
     else()
-        message(STATUS "Thread sanitizer is not supported")
+        message(STATUS "Thread Sanitizer is not supported")
+        set(${return_status} 0)
     endif()
 endmacro()
 
-macro(add_undefined_sanitizer)
+macro(add_undefined_sanitizer return_status)
     set(known_checks
         alignment
         array-bounds
@@ -138,6 +149,8 @@ macro(add_undefined_sanitizer)
         vptr
         )
 
+    set(${return_status} 1)
+
     # Object size sanitizer has no effect at -O0 and produces compiler warning if enabled
     if(NOT CMAKE_C_FLAGS MATCHES "-O0")
         list(APPEND known_checks object-size)
@@ -146,12 +159,13 @@ macro(add_undefined_sanitizer)
     check_sanitizer_support("${known_checks}" supported_checks)
 
     if(NOT ${supported_checks} STREQUAL "")
-        message(STATUS "Undefined behavior sanitizer is enabled: ${supported_checks}")
+        message(STATUS "Undefined behavior Sanitizer is enabled: ${supported_checks}")
         add_compile_options(-fsanitize=${supported_checks})
         add_link_options(-fsanitize=${supported_checks})
 
         add_common_sanitizer_flags()
     else()
         message(STATUS "Undefined behavior sanitizer is not supported")
+        set(${return_status} 0)
     endif()
 endmacro()

@@ -39,6 +39,7 @@ include(CheckIncludeFile)
 include(CheckCSourceCompiles)
 include(CheckCSourceRuns)
 include(CheckCCompilerFlag)
+include(CheckLinkerFlag)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(CTest)
@@ -110,8 +111,9 @@ Useful when embedding into a larger library.
 Default is no prefix (empty prefix).")
 
 # Add multi-choice option
-set(WITH_SANITIZER OFF CACHE STRING "Enable sanitizer support")
-set_property(CACHE WITH_SANITIZER PROPERTY STRINGS "OFF" "Memory" "Address" "Undefined" "Thread")
+set(WITH_SANITIZER OFF CACHE STRING "Enable Sanitizer support")
+set(WITH_SANITIZER_FLAVORS "OFF" "memory" "address" "undefined" "thread")
+set_property(CACHE WITH_SANITIZER PROPERTY STRINGS "${WITH_SANITIZER_FLAVORS}")
 
 if(BASEARCH_ARM_FOUND)
     cmake_dependent_option(WITH_ARMV6 "Build with ARMv6 SIMD" ON ARCH_32BIT OFF)
@@ -563,14 +565,30 @@ set(CMAKE_REQUIRED_DEFINITIONS)
 #
 # Check whether a sanitizer was requested
 #
-if(WITH_SANITIZER STREQUAL "Address")
-    add_address_sanitizer()
-elseif(WITH_SANITIZER STREQUAL "Memory")
-    add_memory_sanitizer()
-elseif(WITH_SANITIZER STREQUAL "Thread")
-    add_thread_sanitizer()
-elseif(WITH_SANITIZER STREQUAL "Undefined")
-    add_undefined_sanitizer()
+message(STATUS "Checking for Sanitizer Option")
+
+string(TOLOWER "${WITH_SANITIZER}" WITH_SANITIZER_LOWER)
+if(NOT WITH_SANITIZER)
+    set(WITH_SANITIZER_ENABLED OFF)
+    message(STATUS " Sanitizer not enabled")
+elseif(WITH_SANITIZER_LOWER IN_LIST WITH_SANITIZER_FLAVORS)
+    if(WITH_SANITIZER_LOWER STREQUAL "address")
+        add_address_sanitizer("RETURN_STATUS")
+    elseif(WITH_SANITIZER_LOWER STREQUAL "memory")
+        add_memory_sanitizer("RETURN_STATUS")
+    elseif(WITH_SANITIZER_LOWER STREQUAL "thread")
+        add_thread_sanitizer("RETURN_STATUS")
+    elseif(WITH_SANITIZER_LOWER STREQUAL "undefined")
+        add_undefined_sanitizer("RETURN_STATUS")
+    endif()
+    if(NOT RETURN_STATUS)
+        set(WITH_SANITIZER_ENABLED OFF)
+        message(FATAL_ERROR "Cannot enable Sanitizer")
+    endif()
+    set(WITH_SANITIZER_ENABLED ON)
+else()
+    message(FATAL_ERROR "Unknown WITH_SANITIZER option: '${WITH_SANITIZER}'\n"
+                        "WITH_SANITIZER must be one of '${WITH_SANITIZER_FLAVORS}'")
 endif()
 
 #
@@ -1568,6 +1586,7 @@ add_feature_info(WITH_MAINTAINER_WARNINGS WITH_MAINTAINER_WARNINGS "Build with p
 add_feature_info(WITH_CODE_COVERAGE WITH_CODE_COVERAGE "Enable code coverage reporting")
 add_feature_info(WITH_INFLATE_STRICT WITH_INFLATE_STRICT "Build with strict inflate distance checking")
 add_feature_info(WITH_INFLATE_ALLOW_INVALID_DIST WITH_INFLATE_ALLOW_INVALID_DIST "Build with zero fill for inflate invalid distances")
+add_feature_info(WITH_SANITIZER WITH_SANITIZER_ENABLED "Build with Sanitizer support")
 
 if(BASEARCH_ARM_FOUND)
     add_feature_info(WITH_ARMV6 WITH_ARMV6 "Build with ARMv6 SIMD")
