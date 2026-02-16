@@ -204,6 +204,17 @@ jobs:
     - name: Compile source code
       run: cmake --build . --verbose -j2 --config ${{ matrix.build-config || 'Release' }}
 
+
+    - name: List installed MSVC toolchains
+      run: Get-ChildItem -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" -Name
+
+    - name: cl version
+      run: cl
+
+    - uses: TheMrMilchmann/setup-msvc-dev@v4
+      with:
+        arch: x64
+
     - name: Run test cases
       # Don't run tests on Windows ARM
       if: runner.os != 'Windows' || contains(matrix.name, 'ARM') == false
