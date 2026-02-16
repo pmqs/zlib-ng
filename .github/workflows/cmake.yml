@@ -733,7 +733,7 @@ jobs:
         choco install --no-progress ninja ${{ matrix.packages }}
 
     - uses: TheMrMilchmann/setup-msvc-dev@v4
-      if: runner.os == 'Windows' &&  matrix.compiler == 'cl' && contains(matrix.cmake-args, 'WITH_SANITIZER')
+      if: runner.os == 'Windows' && matrix.compiler == 'cl' && contains(matrix.cmake-args, 'WITH_SANITIZER')
       with:
         arch: x64
 
