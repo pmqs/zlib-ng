@@ -73,6 +73,11 @@ jobs:
         # choco uninstall --no-progress strawberryperl
         choco install --no-progress ninja ${{ matrix.packages }}
 
+    - uses: TheMrMilchmann/setup-msvc-dev@v4
+      if: runner.os == 'Windows' &&  matrix.compiler == 'cl' && contains(matrix.cmake-args, 'WITH_SANITIZER')
+      with:
+        arch: x64
+        
     - name: Install Visual Studio toolset v140 (Windows)
       if: contains(matrix.name, 'v140')
       run: |
@@ -208,12 +213,10 @@ jobs:
     - name: List installed MSVC toolchains
       run: Get-ChildItem -Path "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC" -Name
 
-    # - name: cl version
-    #   run: cl
-
-    - uses: TheMrMilchmann/setup-msvc-dev@v4
-      with:
-        arch: x64
+    # - uses: TheMrMilchmann/setup-msvc-dev@v4
+    #   if: runner.os == 'Windows' &&  matrix.compiler == 'cl' && contains(matrix.cmake-args, 'WITH_SANITIZER')
+    #   with:
+    #     arch: x64
 
     - name: Run test cases
       # Don't run tests on Windows ARM
