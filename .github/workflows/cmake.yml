@@ -79,7 +79,7 @@ jobs:
     #     arch: x64
 
     - name: Install Visual Studio toolset v140 (Windows)
-      if: contains(matrix.name, 'v140') || ( runner.os == 'Windows' &&  matrix.compiler == 'cl' && contains(matrix.cmake-args, 'WITH_SANITIZER') )
+      if: contains(matrix.name, 'v140')
       run: |
         # Windows 10 SDK (10.0.14393.795)
         # https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/index-legacy
@@ -99,7 +99,7 @@ jobs:
         $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
 
     - name: Install Visual Studio toolset v141 (Windows)
-      if: contains(matrix.name, 'v141')
+      if: contains(matrix.name, 'v141')  || ( runner.os == 'Windows' &&  matrix.compiler == 'cl' && contains(matrix.cmake-args, 'WITH_SANITIZER') )
       run: |
         Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
         $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
