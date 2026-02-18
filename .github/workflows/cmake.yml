@@ -17,13 +17,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-#           - name: Ubuntu GCC ASAN
-#             os: ubuntu-latest
-#             compiler: gcc
-#             cxx-compiler: g++
-#             cxxflags: -Wno-maybe-uninitialized
-#             cmake-args: -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
-#             codecov: ubuntu_gcc
+          - name: Ubuntu GCC ASAN
+            os: ubuntu-latest
+            compiler: gcc
+            cxx-compiler: g++
+            # cxxflags: -Wno-maybe-uninitialized
+            cmake-args: -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
+            codecov: ubuntu_gcc
 #
 #           - name: Ubuntu GCC Native Instructions
 #             os: ubuntu-latest
@@ -134,7 +134,7 @@ jobs:
 #             cmake-args: -DZLIB_COMPAT=ON -DWITH_NEW_STRATEGIES=OFF -DWITH_OPTIM=OFF -DWITH_SANITIZER=Address
 #             cflags: -DNOT_TWEAK_COMPILER
 #             codecov: ubuntu_gcc_compat_no_opt
-# 
+#
 #           - name: Ubuntu GCC ARM SF ASAN
 #             os: ubuntu-latest
 #             cmake-args: -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm.cmake -DWITH_SANITIZER=Address
