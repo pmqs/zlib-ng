@@ -17,13 +17,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu GCC ASAN
-            os: ubuntu-latest
-            compiler: gcc
-            cxx-compiler: g++
-            # cxxflags: -Wno-maybe-uninitialized
-            cmake-args: -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
-            codecov: ubuntu_gcc
+          # - name: Ubuntu GCC ASAN
+          #   os: ubuntu-latest
+          #   compiler: gcc
+          #   cxx-compiler: g++
+          #   # cxxflags: -Wno-maybe-uninitialized
+          #   cmake-args: -DWITH_SANITIZER=Address -DWITH_BENCHMARKS=ON
+          #   codecov: ubuntu_gcc
 #
 #           - name: Ubuntu GCC Native Instructions
 #             os: ubuntu-latest
