@@ -45,7 +45,7 @@ uint32_t Z_EXPORT PREFIX(crc32)(uint32_t crc, const unsigned char *buf, uint32_t
     int * a = malloc(sizeof(int)*3);
     a[5] = 0;
     if (a[50])
-        return 0;
+        a[0] = 1;;
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return FUNCTABLE_CALL(crc32)(crc, buf, len);

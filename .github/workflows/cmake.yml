@@ -475,7 +475,7 @@ jobs:
             # ldflags: -L$LLVM_BUILD_DIR/lib -lc++ -lc++abi
             gcov-exec: llvm-cov-20 gcov
             # https://github.com/llvm/llvm-project/issues/55785
-            msan-options: use_sigaltstack=0
+            msan-options: use_sigaltstack=0:verbosity=1
             # codecov disabled for clang-20, errors
 #
 #           - name: Ubuntu Emscripten WASM32
@@ -834,8 +834,20 @@ jobs:
       if: contains(matrix.packages, 'wine')
       run: wineboot --init
 
-    - name: Compile LLVM C++ libraries (MSAN)
+    - name: Cache LLVM C++ libraries (MSAN)
       if: contains(matrix.name, 'MSAN')
+      id: cache-llvm
+      uses: actions/cache@v5
+      with:
+        # NOTE: path doesn't expand "${{ }}"" variables!
+        path: |
+          ${{ github.workspace }}/llvm-project/build/lib
+          ${{ github.workspace }}/llvm-project/build/include
+        key: cacge-llvm-${{ matrix.os }}-${{ runner.arch }}-${{ matrix.compiler }}
+
+
+    - name: Compile LLVM C++ libraries (MSAN)
+      if: contains(matrix.name, 'MSAN') && steps.cache-iz-zip.outputs.cache-hit != 'true'
       run: |
         git clone --depth=1 https://github.com/llvm/llvm-project --single-branch --branch release/20.x
         cmake -S llvm-project/runtimes -B llvm-project/build -G Ninja \
