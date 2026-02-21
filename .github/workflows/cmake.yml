@@ -3,6 +3,7 @@ on: [push, pull_request]
 env:
   TERM: xterm-256color
   GTEST_COLOR: 1
+  LLVM_BUILD_DIR: ${{ github.workspace }}/llvm-project/build
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   # Don't abort on push to avoid incomplete coveralls uploads
@@ -466,8 +467,11 @@ jobs:
             os: ubuntu-latest
             compiler: clang-20
             cxx-compiler: clang++-20
+            cxx-flags: -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            c-flags: -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
             cmake-args: -GNinja -DWITH_SANITIZER=Memory
             packages: ninja-build clang-20 llvm-20 libclang-rt-20-dev
+            # ldflags: -L$LLVM_BUILD_DIR/lib -lc++ -lc++abi
             gcov-exec: llvm-cov-20 gcov
             # https://github.com/llvm/llvm-project/issues/55785
             msan-options: use_sigaltstack=0
@@ -842,7 +846,7 @@ jobs:
           -DLLVM_INCLUDE_TESTS=OFF \
           -DLLVM_INCLUDE_DOCS=OFF
         cmake --build llvm-project/build -j3 -- cxx cxxabi
-        echo "LLVM_BUILD_DIR=`pwd`/llvm-project/build" >> $GITHUB_ENV
+        # echo "LLVM_BUILD_DIR=`pwd`/llvm-project/build" >> $GITHUB_ENV
       env:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.cxx-compiler }}

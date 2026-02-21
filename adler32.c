@@ -9,12 +9,16 @@
 
 #ifdef ZLIB_COMPAT
 unsigned long Z_EXPORT PREFIX(adler32_z)(unsigned long adler, const unsigned char *buf, size_t len) {
+    int * a = malloc(sizeof(int)*10);
+    int f =  a[50] ;
     if (buf == NULL)
         return ADLER32_INITIAL_VALUE;
     return (unsigned long)FUNCTABLE_CALL(adler32)((uint32_t)adler, buf, len);
 }
 #else
 uint32_t Z_EXPORT PREFIX(adler32_z)(uint32_t adler, const unsigned char *buf, size_t len) {
+    int * a = malloc(sizeof(int)*10);
+    int f =  a[50] ;
     if (buf == NULL)
         return ADLER32_INITIAL_VALUE;
     return FUNCTABLE_CALL(adler32)(adler, buf, len);

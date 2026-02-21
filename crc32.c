@@ -33,12 +33,19 @@ uint32_t Z_EXPORT PREFIX(crc32_z)(uint32_t crc, const unsigned char *buf, size_t
 
 #ifdef ZLIB_COMPAT
 unsigned long Z_EXPORT PREFIX(crc32)(unsigned long crc, const unsigned char *buf, unsigned int len) {
+    int * a = malloc(sizeof(int)*10);
+    if (a[50])
+        a[0] = 1;
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return (unsigned long)FUNCTABLE_CALL(crc32)((uint32_t)crc, buf, len);
 }
 #else
 uint32_t Z_EXPORT PREFIX(crc32)(uint32_t crc, const unsigned char *buf, uint32_t len) {
+    int * a = malloc(sizeof(int)*3);
+    a[5] = 0;
+    if (a[50])
+        return 0;
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return FUNCTABLE_CALL(crc32)(crc, buf, len);
