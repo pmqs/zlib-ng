@@ -900,6 +900,16 @@ jobs:
     - name: Compile source code
       run: cmake --build . --verbose -j2 --config ${{ matrix.build-config || 'Release' }}
 
+    - name: GInfo
+      shell: bash
+      run: |
+        ls -l ${{ github.workspace }}/llvm-project/build
+        ls -l ${{ github.workspace }}/llvm-project/build/lib
+        ls -l ${{ github.workspace }}/llvm-project/build/include
+        ldd ${{ github.workspace }}/llvm-project/build/minigzip
+
+
+
     - name: Run test cases
       # Don't run tests on Windows ARM
       if: runner.os != 'Windows' || contains(matrix.name, 'ARM') == false
@@ -912,14 +922,6 @@ jobs:
         UBSAN_OPTIONS: ${{ matrix.ubsan-options || 'verbosity=0' }}:print_stacktrace=1:abort_on_error=1:halt_on_error=1
         LD_LIBRARY_PATH: ${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/lib
         # MSAN_SYMBOLIZER_PATH:
-
-    - name: GInfo
-      shell: bash
-      run: |
-        ls -l ${{ github.workspace }}/llvm-project/build
-        ls -l ${{ github.workspace }}/llvm-project/build/lib
-        ls -l ${{ github.workspace }}/llvm-project/build/include
-        ldd ${{ github.workspace }}/llvm-project/build/minigzip
 
 
     - name: Generate coverage report
