@@ -4,7 +4,7 @@ env:
   TERM: xterm-256color
   GTEST_COLOR: 1
   LLVM_BUILD_DIR: ${{ github.workspace }}/llvm-project/build
-  LD_LIBRARY_PATH: ${{ github.workspace }}/llvm-project/build/lib
+  # LD_LIBRARY_PATH: ${{ github.workspace }}/llvm-project/build/lib
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   # Don't abort on push to avoid incomplete coveralls uploads
@@ -468,8 +468,14 @@ jobs:
             os: ubuntu-latest
             compiler: clang-20
             cxx-compiler: clang++-20
-            cxx-flags: -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
-            c-flags: -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            cxxflags: -fsanitize=memory -stdlib=libc++ -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            cflags: -fsanitize=memory
+            ldflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -L$LLVM_BUILD_DIR/lib -stdlib=libc++ -lc++abi
+
+            # cxxflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            # cxxflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            # cflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            # ldflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi
             cmake-args: -GNinja -DWITH_SANITIZER=Memory
             packages: ninja-build clang-20 llvm-20 libclang-rt-20-dev
             # ldflags: -L$LLVM_BUILD_DIR/lib -lc++ -lc++abi
@@ -839,11 +845,10 @@ jobs:
       id: cache-llvm
       uses: actions/cache@v5
       with:
-        # NOTE: path doesn't expand "${{ }}"" variables!
         path: |
           ${{ github.workspace }}/llvm-project/build/lib
           ${{ github.workspace }}/llvm-project/build/include
-        key: cacge-llvm-${{ matrix.os }}-${{ runner.arch }}-${{ matrix.compiler }}
+        key: cache-llvm-${{ matrix.os }}-${{ runner.arch }}-${{ matrix.compiler }}
 
 
     - name: Compile LLVM C++ libraries (MSAN)
@@ -859,7 +864,6 @@ jobs:
           -DLLVM_INCLUDE_TESTS=OFF \
           -DLLVM_INCLUDE_DOCS=OFF
         cmake --build llvm-project/build -j3 -- cxx cxxabi
-        # echo "LLVM_BUILD_DIR=`pwd`/llvm-project/build" >> $GITHUB_ENV
       env:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.cxx-compiler }}
@@ -895,6 +899,7 @@ jobs:
         TSAN_OPTIONS: ${{ matrix.tsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
         LSAN_OPTIONS: ${{ matrix.lsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
         UBSAN_OPTIONS: ${{ matrix.ubsan-options || 'verbosity=0' }}:print_stacktrace=1:abort_on_error=1:halt_on_error=1
+        # MSAN_SYMBOLIZER_PATH:
 
     - name: Generate coverage report
       if: matrix.codecov
