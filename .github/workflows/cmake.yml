@@ -468,9 +468,9 @@ jobs:
             os: ubuntu-latest
             compiler: clang-20
             cxx-compiler: clang++-20
-            cxxflags: -fsanitize=memory -stdlib=libc++ -I${{ env.LLVM_BUILD_DIR }}/include -I${{ env.LLVM_BUILD_DIR }}/include/c++/v1
+            cxxflags: -fsanitize=memory -stdlib=libc++ -I${{ github.workspace }}/llvm-project/build/include -I${{ github.workspace }}/llvm-project/build/include/c++/v1
             cflags: -fsanitize=memory
-            ldflags: -Wl,-rpath,${{ env.LLVM_BUILD_DIR }}/lib -L${{ env.LLVM_BUILD_DIR }}/lib -stdlib=libc++ -lc++abi
+            ldflags: -Wl,-rpath,${{ github.workspace }}/llvm-project/build/lib -L${{ github.workspace }}/llvm-project/build/lib -stdlib=libc++ -lc++abi
 
             # cxxflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
             # cxxflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
