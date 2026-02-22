@@ -906,7 +906,7 @@ jobs:
         ls -l ${{ github.workspace }}/llvm-project/build
         ls -l ${{ github.workspace }}/llvm-project/build/lib
         ls -l ${{ github.workspace }}/llvm-project/build/include
-        ldd ${{ github.workspace }}/llvm-project/build/minigzip
+        ldd ${{ github.workspace }}/build/minigzip
 
 
 
