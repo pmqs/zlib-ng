@@ -861,7 +861,7 @@ jobs:
 
 
     - name: Compile LLVM C++ libraries (MSAN)
-      if: contains(matrix.name, 'MSAN') && steps.cache-iz-zip.outputs.cache-hit != 'true'
+      if: contains(matrix.name, 'MSAN') && steps.cache-llvm.outputs.cache-hit != 'true'
       run: |
         git clone --depth=1 https://github.com/llvm/llvm-project --single-branch --branch release/20.x
         cmake -S llvm-project/runtimes -B llvm-project/build -G Ninja \
