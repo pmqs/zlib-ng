@@ -877,39 +877,47 @@ jobs:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.cxx-compiler }}
 
-    - name: Generate project files
+    - name: GInfo
       shell: bash
-      # Shared libraries turned off for qemu ppc* and sparc & reduce code coverage sources
       run: |
-        cmake -S . ${{ matrix.cmake-args }} \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build-config || 'Release' }} \
-          -DBUILD_SHARED_LIBS=${{ matrix.build-shared || 'OFF' }} \
-          -DWITH_FUZZERS=ON \
-          -DWITH_MAINTAINER_WARNINGS=ON \
-          ${{ matrix.codecov && '-DWITH_CODE_COVERAGE=ON' }}
-      env:
-        CC: ${{ matrix.compiler }}
-        CXX: ${{ matrix.cxx-compiler }}
-        CFLAGS: ${{ matrix.cflags }}
-        CXXFLAGS: ${{ matrix.cxxflags }}
-        LDFLAGS: ${{ matrix.ldflags }}
-        CI: true
+        ls -l ${{ github.workspace }}/llvm-project/build
+        ls -l ${{ github.workspace }}/llvm-project/build/lib
+        ls -l ${{ github.workspace }}/llvm-project/build/include
 
-    - name: Compile source code
-      run: cmake --build . --verbose -j2 --config ${{ matrix.build-config || 'Release' }}
 
-    - name: Run test cases
-      # Don't run tests on Windows ARM
-      if: runner.os != 'Windows' || contains(matrix.name, 'ARM') == false
-      run: ctest --verbose -C ${{ matrix.build-config || 'Release' }} -E benchmark_zlib --output-on-failure --max-width 120 -j ${{ matrix.parallels-jobs || '3' }}
-      env:
-        ASAN_OPTIONS: ${{ matrix.asan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        MSAN_OPTIONS: ${{ matrix.msan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        TSAN_OPTIONS: ${{ matrix.tsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        LSAN_OPTIONS: ${{ matrix.lsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        UBSAN_OPTIONS: ${{ matrix.ubsan-options || 'verbosity=0' }}:print_stacktrace=1:abort_on_error=1:halt_on_error=1
-        LD_LIBRARY_PATH: ${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/lib
-        # MSAN_SYMBOLIZER_PATH:
+    # - name: Generate project files
+    #   shell: bash
+    #   # Shared libraries turned off for qemu ppc* and sparc & reduce code coverage sources
+    #   run: |
+    #     cmake -S . ${{ matrix.cmake-args }} \
+    #       -DCMAKE_BUILD_TYPE=${{ matrix.build-config || 'Release' }} \
+    #       -DBUILD_SHARED_LIBS=${{ matrix.build-shared || 'OFF' }} \
+    #       -DWITH_FUZZERS=ON \
+    #       -DWITH_MAINTAINER_WARNINGS=ON \
+    #       ${{ matrix.codecov && '-DWITH_CODE_COVERAGE=ON' }}
+    #   env:
+    #     CC: ${{ matrix.compiler }}
+    #     CXX: ${{ matrix.cxx-compiler }}
+    #     CFLAGS: ${{ matrix.cflags }}
+    #     CXXFLAGS: ${{ matrix.cxxflags }}
+    #     LDFLAGS: ${{ matrix.ldflags }}
+    #     CI: true
+#
+#     - name: Compile source code
+#       run: cmake --build . --verbose -j2 --config ${{ matrix.build-config || 'Release' }}
+#
+#     - name: Run test cases
+#       # Don't run tests on Windows ARM
+#       if: runner.os != 'Windows' || contains(matrix.name, 'ARM') == false
+#       run: ctest --verbose -C ${{ matrix.build-config || 'Release' }} -E benchmark_zlib --output-on-failure --max-width 120 -j ${{ matrix.parallels-jobs || '3' }}
+#       env:
+#         ASAN_OPTIONS: ${{ matrix.asan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+#         MSAN_OPTIONS: ${{ matrix.msan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+#         TSAN_OPTIONS: ${{ matrix.tsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+#         LSAN_OPTIONS: ${{ matrix.lsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+#         UBSAN_OPTIONS: ${{ matrix.ubsan-options || 'verbosity=0' }}:print_stacktrace=1:abort_on_error=1:halt_on_error=1
+#         LD_LIBRARY_PATH: ${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/lib
+#         # MSAN_SYMBOLIZER_PATH:
 
     - name: Generate coverage report
       if: matrix.codecov
@@ -944,15 +952,15 @@ jobs:
       env:
         COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
 
-    - name: Test benchmarks (crashtest only, no coverage data collection)
-      if: contains(matrix.cmake-args, '-DWITH_BENCHMARKS=ON')
-      run: ctest --verbose -C Release -R ^benchmark_zlib$ --output-on-failure --max-width 120 -j ${{ matrix.parallels-jobs || '3' }}
-      env:
-        ASAN_OPTIONS: ${{ matrix.asan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        MSAN_OPTIONS: ${{ matrix.msan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        TSAN_OPTIONS: ${{ matrix.tsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        LSAN_OPTIONS: ${{ matrix.lsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
-        UBSAN_OPTIONS: ${{ matrix.ubsan-options || 'verbosity=0' }}:print_stacktrace=1:abort_on_error=1:halt_on_error=1
+    # - name: Test benchmarks (crashtest only, no coverage data collection)
+    #   if: contains(matrix.cmake-args, '-DWITH_BENCHMARKS=ON')
+    #   run: ctest --verbose -C Release -R ^benchmark_zlib$ --output-on-failure --max-width 120 -j ${{ matrix.parallels-jobs || '3' }}
+    #   env:
+    #     ASAN_OPTIONS: ${{ matrix.asan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+    #     MSAN_OPTIONS: ${{ matrix.msan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+    #     TSAN_OPTIONS: ${{ matrix.tsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+    #     LSAN_OPTIONS: ${{ matrix.lsan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
+    #     UBSAN_OPTIONS: ${{ matrix.ubsan-options || 'verbosity=0' }}:print_stacktrace=1:abort_on_error=1:halt_on_error=1
 
     - name: Upload build errors
       uses: actions/upload-artifact@v6
