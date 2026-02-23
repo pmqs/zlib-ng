@@ -492,6 +492,27 @@ jobs:
             # https://github.com/llvm/llvm-project/issues/55785
             msan-options: use_sigaltstack=0:verbosity=1
             # codecov disabled for clang-20, errors
+
+
+          - name: Ubuntu Clang-21 MSAN
+            os: ubuntu-latest
+            compiler: clang-21
+            cxx-compiler: clang++-21
+            cxxflags: -fsanitize=memory -stdlib=libc++ -I${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/include -I${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/include/c++/v1
+            cflags: -fsanitize=memory
+            ldflags: -Wl,-rpath,${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/lib -L${{ needs.llvm.outputs.LLVM_BUILD_DIR }}/lib -stdlib=libc++ -lc++abi
+
+            # cxxflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            # cxxflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            # cflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi -I$LLVM_BUILD_DIR/include -I$LLVM_BUILD_DIR/include/c++/v1
+            # ldflags: -Wl,-rpath,$LLVM_BUILD_DIR/lib -stdlib=libc++ -L$LLVM_BUILD_DIR/lib -lc++abi
+            cmake-args: -GNinja -DWITH_SANITIZER=Memory
+            packages: ninja-build clang-21 llvm-21 libclang-rt-21-dev
+            # ldflags: -L$LLVM_BUILD_DIR/lib -lc++ -lc++abi
+            gcov-exec: llvm-cov-21 gcov
+            # https://github.com/llvm/llvm-project/issues/55785
+            msan-options: use_sigaltstack=0:verbosity=1
+            # codecov disabled for clang-21, errors
 #
 #           - name: Ubuntu Emscripten WASM32
 #             os: ubuntu-latest
@@ -861,7 +882,7 @@ jobs:
 
 
     - name: Compile LLVM C++ libraries (MSAN)
-      if: contains(matrix.name, 'MSAN') && steps.cache-llvm.outputs.cache-hit != 'true'
+      if: contains(matrix.name, 'MSAN') && matrix.compiler == 'clang-20' && steps.cache-llvm.outputs.cache-hit != 'true'
       run: |
         git clone --depth=1 https://github.com/llvm/llvm-project --single-branch --branch release/20.x
         cmake -S llvm-project/runtimes -B llvm-project/build -G Ninja \
@@ -877,6 +898,22 @@ jobs:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.cxx-compiler }}
 
+    - name: Compile LLVM C++ libraries (MSAN) clang-21
+      if: contains(matrix.name, 'MSAN') && matrix.compiler == 'clang-21' && steps.cache-llvm.outputs.cache-hit != 'true'
+      run: |
+        git clone --depth=1 https://github.com/llvm/llvm-project --single-branch --branch release/21.x
+        cmake -S llvm-project/runtimes -B llvm-project/build -G Ninja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" \
+          -DLLVM_USE_SANITIZER=MemoryWithOrigins \
+          -DLIBCXXABI_USE_LLVM_UNWINDER=OFF \
+          -DLIBCXX_INCLUDE_BENCHMARKS=OFF \
+          -DLLVM_INCLUDE_TESTS=OFF \
+          -DLLVM_INCLUDE_DOCS=OFF
+        cmake --build llvm-project/build -j3 -- cxx cxxabi
+      env:
+        CC: ${{ matrix.compiler }}
+        CXX: ${{ matrix.cxx-compiler }}
 
 
     - name: Generate project files
