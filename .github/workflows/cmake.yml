@@ -480,9 +480,10 @@ jobs:
             cxxflags: -fsanitize=memory -Wl,-rpath,/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -L/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -stdlib=libc++ -I/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/include -I/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/include/c++/v1
             cflags: -fsanitize=memory
             # ldflags: -Wl,-rpath,/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -L/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -stdlib=libc++ -lc++abi
-            cmake-args: -GNinja -DCMAKE_LINKER_TYPE=LLD -DWITH_SANITIZER=Memory
-            packages: ninja-build clang-20 lld llvm-20 libclang-rt-20-dev
+            cmake-args: -DWITH_SANITIZER=Memory
+            packages: clang-20 llvm-20 libclang-rt-20-dev
             gcov-exec: llvm-cov-20 gcov
+            build-config: Debug
             # ld-library-path: /home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib
             # https://github.com/llvm/llvm-project/issues/55785
             msan-options: use_sigaltstack=0
@@ -951,7 +952,7 @@ jobs:
     - name: Run test cases
       # Don't run tests on Windows ARM
       if: runner.os != 'Windows' || contains(matrix.name, 'ARM') == false
-      run: ctest --verbose -C Release -E benchmark_zlib --output-on-failure --max-width 120 -j ${{ matrix.parallels-jobs || '3' }}
+      run: ctest --verbose -C {{ matrix.build-config || 'Release' }} -E benchmark_zlib --output-on-failure --max-width 120 -j ${{ matrix.parallels-jobs || '3' }}
       env:
         ASAN_OPTIONS: ${{ matrix.asan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
         MSAN_OPTIONS: ${{ matrix.msan-options || 'verbosity=0' }}:abort_on_error=1:halt_on_error=1
