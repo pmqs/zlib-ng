@@ -480,7 +480,7 @@ jobs:
             cxxflags: -fsanitize=memory -Wl,-rpath,/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -L/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -stdlib=libc++ -I/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/include -I/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/include/c++/v1
             cflags: -fsanitize=memory
             # ldflags: -Wl,-rpath,/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -L/home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib -stdlib=libc++ -lc++abi
-            cmake-args: -GNinja DCMAKE_LINKER_TYPE=LLD -DWITH_SANITIZER=Memory
+            cmake-args: -GNinja -DCMAKE_LINKER_TYPE=LLD -DWITH_SANITIZER=Memory
             packages: ninja-build clang-20 llvm-20 libclang-rt-20-dev
             gcov-exec: llvm-cov-20 gcov
             # ld-library-path: /home/runner/work/zlib-ng/zlib-ng/llvm-project/build/lib
