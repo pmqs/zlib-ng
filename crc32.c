@@ -19,12 +19,20 @@ const uint32_t * Z_EXPORT PREFIX(get_crc_table)(void) {
 
 #ifdef ZLIB_COMPAT
 unsigned long Z_EXPORT PREFIX(crc32_z)(unsigned long crc, const unsigned char *buf, size_t len) {
+    int* a = malloc(sizeof(int) * 2);
+    a[5] = 0;
+    if (a[1])
+        printf("xxx\n");
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return (unsigned long)FUNCTABLE_CALL(crc32)((uint32_t)crc, buf, len);
 }
 #else
 uint32_t Z_EXPORT PREFIX(crc32_z)(uint32_t crc, const unsigned char *buf, size_t len) {
+    int* a = malloc(sizeof(int) * 2);
+    a[5] = 0;
+    if (a[1])
+        printf("xxx\n");
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return FUNCTABLE_CALL(crc32)(crc, buf, len);
@@ -33,12 +41,20 @@ uint32_t Z_EXPORT PREFIX(crc32_z)(uint32_t crc, const unsigned char *buf, size_t
 
 #ifdef ZLIB_COMPAT
 unsigned long Z_EXPORT PREFIX(crc32)(unsigned long crc, const unsigned char *buf, unsigned int len) {
+    int* a = malloc(sizeof(int) * 2);
+    a[5] = 0;
+    if (a[1])
+        printf("xx\n");
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return (unsigned long)FUNCTABLE_CALL(crc32)((uint32_t)crc, buf, len);
 }
 #else
 uint32_t Z_EXPORT PREFIX(crc32)(uint32_t crc, const unsigned char *buf, uint32_t len) {
+    int* a = malloc(sizeof(int) * 2);
+    // a[5] = 0;
+    if (a[1])
+        printf("xxx\n");
     if (buf == NULL)
         return CRC32_INITIAL_VALUE;
     return FUNCTABLE_CALL(crc32)(crc, buf, len);
